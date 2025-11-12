@@ -1,5 +1,5 @@
-import { renderProducts } from "../../utils/productRenderer";
-import { getCurrentFilters } from "../../utils/filterState";
+import { renderProducts } from "../../utils/productRenderer.js";
+import { getCurrentFilters } from "../../utils/filterState.js";
 
 export const ProductList = () => {
   // DOM 렌더링 후 상품 목록 로드

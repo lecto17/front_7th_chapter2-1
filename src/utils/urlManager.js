@@ -57,3 +57,44 @@ export const getFiltersFromURL = () => {
     sort: params.sort || "price_asc",
   };
 };
+
+/**
+ * 현재 경로를 반환
+ * @returns {string} 현재 경로
+ */
+export const getCurrentPath = () => {
+  return window.location.pathname;
+};
+
+/**
+ * 경로에서 파라미터 추출
+ * @param {string} pattern - 경로 패턴 (예: /product/:id)
+ * @param {string} path - 실제 경로 (예: /product/123)
+ * @returns {Object|null} 파라미터 객체 또는 null
+ */
+export const matchPath = (pattern, path) => {
+  const patternParts = pattern.split("/").filter(Boolean);
+  const pathParts = path.split("/").filter(Boolean);
+
+  if (patternParts.length !== pathParts.length) {
+    return null;
+  }
+
+  const params = {};
+
+  for (let i = 0; i < patternParts.length; i++) {
+    const patternPart = patternParts[i];
+    const pathPart = pathParts[i];
+
+    if (patternPart.startsWith(":")) {
+      // 동적 파라미터
+      const paramName = patternPart.slice(1);
+      params[paramName] = pathPart;
+    } else if (patternPart !== pathPart) {
+      // 정적 경로가 일치하지 않음
+      return null;
+    }
+  }
+
+  return params;
+};

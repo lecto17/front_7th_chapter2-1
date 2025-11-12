@@ -1,5 +1,5 @@
-import { HomePage } from "./pages/HomePage.js";
-import { initCartHandler } from "./utils/initCartHandler.js";
+import { initRouter } from "./utils/router.js";
+import { initProductClickHandler } from "./utils/productClickHandler.js";
 
 const enableMocking = () =>
   import("./mocks/browser.js").then(({ worker }) =>
@@ -951,14 +951,11 @@ function main() {
   `;
   /* eslint-enable no-unused-vars */
 
-  // 실제 앱 렌더링
-  const root = document.getElementById("root");
-  if (root) {
-    root.innerHTML = HomePage();
-  }
+  // 라우터 초기화 (페이지 렌더링 포함)
+  initRouter();
 
-  // 장바구니 이벤트 핸들러 초기화
-  initCartHandler();
+  // 상품 카드 클릭 핸들러 초기화
+  initProductClickHandler();
 
   // 템플릿 예제 (개발 참고용)
   // document.body.innerHTML = `
