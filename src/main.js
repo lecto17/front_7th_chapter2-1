@@ -1,11 +1,21 @@
+import { HomePage } from "./pages/HomePage.js";
+import { initCartHandler } from "./utils/initCartHandler.js";
+
 const enableMocking = () =>
   import("./mocks/browser.js").then(({ worker }) =>
     worker.start({
       onUnhandledRequest: "bypass",
+      serviceWorker: {
+        url: `/front_7th_chapter2-1/mockServiceWorker.js`,
+        options: {
+          scope: "/front_7th_chapter2-1/",
+        },
+      },
     }),
   );
 
 function main() {
+  /* eslint-disable no-unused-vars */
   const 상품목록_레이아웃_로딩 = `
     <div class="min-h-screen bg-gray-50">
       <header class="bg-white shadow-sm sticky top-0 z-40">
@@ -158,98 +168,6 @@ function main() {
 
   const 상품목록_레이아웃_로딩완료 = `
     <div class="bg-gray-50">
-      <header class="bg-white shadow-sm sticky top-0 z-40">
-        <div class="max-w-md mx-auto px-4 py-4">
-          <div class="flex items-center justify-between">
-            <h1 class="text-xl font-bold text-gray-900">
-              <a href="/" data-link="">쇼핑몰</a>
-            </h1>
-            <div class="flex items-center space-x-2">
-              <!-- 장바구니 아이콘 -->
-              <button id="cart-icon-btn" class="relative p-2 text-gray-700 hover:text-gray-900 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 3h2l.4 2M7 13h10l4-8H5.4m2.6 8L6 2H3m4 11v6a1 1 0 001 1h1a1 1 0 001-1v-6M13 13v6a1 1 0 001 1h1a1 1 0 001-1v-6"></path>
-                </svg>
-                <span
-                  class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">4</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-      <main class="max-w-md mx-auto px-4 py-4">
-        <!-- 검색 및 필터 -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
-          <!-- 검색창 -->
-          <div class="mb-4">
-            <div class="relative">
-              <input type="text" id="search-input" placeholder="상품명을 검색해보세요..." value="" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg
-                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
-          <!-- 필터 옵션 -->
-          <div class="space-y-3">
-            <!-- 카테고리 필터 -->
-            <div class="space-y-2">
-              <div class="flex items-center gap-2">
-                <label class="text-sm text-gray-600">카테고리:</label>
-                <button data-breadcrumb="reset" class="text-xs hover:text-blue-800 hover:underline">전체</button>
-              </div>
-              <!-- 1depth 카테고리 -->
-              <div class="flex flex-wrap gap-2">
-                <button data-category1="생활/건강" class="category1-filter-btn text-left px-3 py-2 text-sm rounded-md border transition-colors
-                   bg-white border-gray-300 text-gray-700 hover:bg-gray-50">
-                  생활/건강
-                </button>
-                <button data-category1="디지털/가전" class="category1-filter-btn text-left px-3 py-2 text-sm rounded-md border transition-colors
-                   bg-white border-gray-300 text-gray-700 hover:bg-gray-50">
-                  디지털/가전
-                </button>
-              </div>
-              <!-- 2depth 카테고리 -->
-            </div>
-            <!-- 기존 필터들 -->
-            <div class="flex gap-2 items-center justify-between">
-              <!-- 페이지당 상품 수 -->
-              <div class="flex items-center gap-2">
-                <label class="text-sm text-gray-600">개수:</label>
-                <select id="limit-select"
-                        class="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                  <option value="10">
-                    10개
-                  </option>
-                  <option value="20" selected="">
-                    20개
-                  </option>
-                  <option value="50">
-                    50개
-                  </option>
-                  <option value="100">
-                    100개
-                  </option>
-                </select>
-              </div>
-              <!-- 정렬 -->
-              <div class="flex items-center gap-2">
-                <label class="text-sm text-gray-600">정렬:</label>
-                <select id="sort-select" class="text-sm border border-gray-300 rounded px-2 py-1
-                             focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                  <option value="price_asc" selected="">가격 낮은순</option>
-                  <option value="price_desc">가격 높은순</option>
-                  <option value="name_asc">이름순</option>
-                  <option value="name_desc">이름 역순</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
         <!-- 상품 목록 -->
         <div class="mb-6">
           <div>
@@ -320,12 +238,6 @@ function main() {
             </div>
           </div>
         </div>
-      </main>
-      <footer class="bg-white shadow-sm sticky top-0 z-40">
-        <div class="max-w-md mx-auto py-8 text-center text-gray-500">
-          <p>© 2025 항해플러스 프론트엔드 쇼핑몰</p>
-        </div>
-      </footer>
     </div>
   `;
 
@@ -487,52 +399,6 @@ function main() {
         </div>
       </div>
     </main>
-  `;
-
-  const 토스트 = `
-    <div class="flex flex-col gap-2 items-center justify-center mx-auto" style="width: fit-content;">
-      <div class="bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2 max-w-sm">
-        <div class="flex-shrink-0">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-        </div>
-        <p class="text-sm font-medium">장바구니에 추가되었습니다</p>
-        <button id="toast-close-btn" class="flex-shrink-0 ml-2 text-white hover:text-gray-200">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-      
-      <div class="bg-blue-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2 max-w-sm">
-        <div class="flex-shrink-0">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-         </svg>
-        </div>
-        <p class="text-sm font-medium">선택된 상품들이 삭제되었습니다</p>
-        <button id="toast-close-btn" class="flex-shrink-0 ml-2 text-white hover:text-gray-200">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-      
-      <div class="bg-red-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2 max-w-sm">
-        <div class="flex-shrink-0">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </div>
-        <p class="text-sm font-medium">오류가 발생했습니다.</p>
-        <button id="toast-close-btn" class="flex-shrink-0 ml-2 text-white hover:text-gray-200">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
   `;
 
   const 장바구니_비어있음 = `
@@ -1083,65 +949,45 @@ function main() {
       </footer>
     </div>
   `;
+  /* eslint-enable no-unused-vars */
 
-  const _404_ = `
-    <main class="max-w-md mx-auto px-4 py-4">
-      <div class="text-center my-4 py-20 shadow-md p-6 bg-white rounded-lg">
-      <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#1a73e8;stop-opacity:1" />
-          </linearGradient>
-          <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="2" stdDeviation="8" flood-color="#000000" flood-opacity="0.1"/>
-          </filter>
-        </defs>
-        
-        <!-- 404 Numbers -->
-        <text x="160" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="48" font-weight="600" fill="url(#blueGradient)" text-anchor="middle">404</text>
-        
-        <!-- Icon decoration -->
-        <circle cx="80" cy="60" r="3" fill="#e8f0fe" opacity="0.8"/>
-        <circle cx="240" cy="60" r="3" fill="#e8f0fe" opacity="0.8"/>
-        <circle cx="90" cy="45" r="2" fill="#4285f4" opacity="0.5"/>
-        <circle cx="230" cy="45" r="2" fill="#4285f4" opacity="0.5"/>
-        
-        <!-- Message -->
-        <text x="160" y="110" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="400" fill="#5f6368" text-anchor="middle">페이지를 찾을 수 없습니다</text>
-        
-        <!-- Subtle bottom accent -->
-        <rect x="130" y="130" width="60" height="2" rx="1" fill="url(#blueGradient)" opacity="0.3"/>
-      </svg>
-      
-      <a href="/" data-link class="inline-block px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">홈으로</a>
-    </div>
-    </main>
-  `;
+  // 실제 앱 렌더링
+  const root = document.getElementById("root");
+  if (root) {
+    root.innerHTML = HomePage();
+  }
 
-  document.body.innerHTML = `
-    ${상품목록_레이아웃_로딩}
-    <br />
-    ${상품목록_레이아웃_로딩완료}
-    <br />
-    ${상품목록_레이아웃_카테고리_1Depth}
-    <br />
-    ${상품목록_레이아웃_카테고리_2Depth}
-    <br />
-    ${토스트}
-    <br />
-    ${장바구니_비어있음}
-    <br />
-    ${장바구니_선택없음}
-    <br />
-    ${장바구니_선택있음}
-    <br />
-    ${상세페이지_로딩}
-    <br />
-    ${상세페이지_로딩완료}
-    <br />
-    ${_404_}
-  `;
+  // 장바구니 이벤트 핸들러 초기화
+  initCartHandler();
+
+  // 템플릿 예제 (개발 참고용)
+  // document.body.innerHTML = `
+  //   ${장바구니_비어있음}
+  // `;
+
+  // document.body.innerHTML = `
+  //   ${상품목록_레이아웃_로딩}
+  //   <br />
+  //   ${상품목록_레이아웃_로딩완료}
+  //   <br />
+  //   ${상품목록_레이아웃_카테고리_1Depth}
+  //   <br />
+  //   ${상품목록_레이아웃_카테고리_2Depth}
+  //   <br />
+  //   ${토스트}
+  //   <br />
+  //   ${장바구니_비어있음}
+  //   <br />
+  //   ${장바구니_선택없음}
+  //   <br />
+  //   ${장바구니_선택있음}
+  //   <br />
+  //   ${상세페이지_로딩}
+  //   <br />
+  //   ${상세페이지_로딩완료}
+  //   <br />
+  //   ${NotFound}
+  // `;
 }
 
 // 애플리케이션 시작
