@@ -6,11 +6,22 @@ import { addToCart, updateCartIconCount } from "./cartManager.js";
 import { showSuccessToast, showErrorToast } from "./toastManager.js";
 import { openCartModal } from "./cartModalManager.js";
 
+// 중복 초기화 방지 플래그
+let isInitialized = false;
+
 /**
  * 장바구니 추가 버튼 이벤트 핸들러 초기화
  * 이벤트 위임을 사용하여 동적으로 추가되는 상품에도 대응
  */
 export const initCartHandler = () => {
+  // 이미 초기화되었으면 건너뛰기
+  if (isInitialized) {
+    updateCartIconCount();
+    return;
+  }
+
+  isInitialized = true;
+
   // 페이지 로드 시 장바구니 아이콘 개수 업데이트
   updateCartIconCount();
 
@@ -28,7 +39,6 @@ export const initCartHandler = () => {
     // 장바구니 담기 버튼 클릭
     if (target.classList.contains("add-to-cart-btn") || target.closest(".add-to-cart-btn")) {
       const button = target.classList.contains("add-to-cart-btn") ? target : target.closest(".add-to-cart-btn");
-
       handleAddToCart(button);
     }
   });

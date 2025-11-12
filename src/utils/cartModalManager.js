@@ -6,6 +6,50 @@ import { CartModal } from "../components/cart/CartModal.js";
 import { clearCart, removeFromCart, updateQuantity, updateCartIconCount } from "./cartManager.js";
 import { showInfoToast, showToast } from "./toastManager.js";
 
+// localStorage 키
+const CART_CHECKBOX_STATE_KEY = "cart_checkbox_state";
+
+/**
+ * 체크박스 상태를 localStorage에 저장
+ */
+const saveCheckboxState = () => {
+  const checkedCheckboxes = document.querySelectorAll(".cart-item-checkbox:checked");
+  const checkedProductIds = Array.from(checkedCheckboxes).map((cb) => cb.getAttribute("data-product-id"));
+  localStorage.setItem(CART_CHECKBOX_STATE_KEY, JSON.stringify(checkedProductIds));
+};
+
+/**
+ * 체크박스 상태를 localStorage에서 불러와 복원
+ */
+const restoreCheckboxState = () => {
+  try {
+    const savedState = localStorage.getItem(CART_CHECKBOX_STATE_KEY);
+    if (!savedState) return;
+
+    const checkedProductIds = JSON.parse(savedState);
+
+    checkedProductIds.forEach((productId) => {
+      const checkbox = document.querySelector(`.cart-item-checkbox[data-product-id="${productId}"]`);
+      if (checkbox) {
+        checkbox.checked = true;
+      }
+    });
+
+    // 전체 선택 체크박스 상태 업데이트
+    const itemCheckboxes = document.querySelectorAll(".cart-item-checkbox");
+    const selectAllCheckbox = document.getElementById("cart-modal-select-all-checkbox");
+    if (selectAllCheckbox && itemCheckboxes.length > 0) {
+      const allChecked = Array.from(itemCheckboxes).every((cb) => cb.checked);
+      selectAllCheckbox.checked = allChecked;
+    }
+
+    // 선택 삭제 버튼 업데이트
+    updateDeleteSelectedButton();
+  } catch (error) {
+    console.error("체크박스 상태 복원 실패:", error);
+  }
+};
+
 /**
  * 장바구니 모달 열기
  */
@@ -30,6 +74,11 @@ export const openCartModal = () => {
     modalElement.style.display = "block";
     // body 스크롤 방지
     document.body.style.overflow = "hidden";
+
+    // 체크박스 상태 복원
+    setTimeout(() => {
+      restoreCheckboxState();
+    }, 0);
   }
 };
 
@@ -183,6 +232,7 @@ const handleSelectAll = (e) => {
     checkbox.checked = isChecked;
   });
   updateDeleteSelectedButton();
+  saveCheckboxState();
 };
 
 /**
@@ -198,6 +248,7 @@ const handleItemCheckboxChange = () => {
   }
 
   updateDeleteSelectedButton();
+  saveCheckboxState();
 };
 
 /**
@@ -263,6 +314,11 @@ const handleRemoveItem = (e) => {
   updateCartModalContent();
   updateCartIconCount();
   showInfoToast("상품이 삭제되었습니다");
+
+  // 체크박스 상태 재저장 (삭제된 상품 제거)
+  setTimeout(() => {
+    saveCheckboxState();
+  }, 0);
 };
 
 /**
@@ -273,6 +329,9 @@ const handleClearCart = () => {
   updateCartModalContent();
   updateCartIconCount();
   showInfoToast("장바구니가 비워졌습니다");
+
+  // 체크박스 상태 초기화
+  localStorage.removeItem(CART_CHECKBOX_STATE_KEY);
 };
 
 /**
@@ -291,6 +350,11 @@ const handleRemoveSelected = () => {
   updateCartModalContent();
   updateCartIconCount();
   showInfoToast("선택된 상품들이 삭제되었습니다");
+
+  // 체크박스 상태 재저장 (삭제된 상품들 제거)
+  setTimeout(() => {
+    saveCheckboxState();
+  }, 0);
 };
 
 /**
