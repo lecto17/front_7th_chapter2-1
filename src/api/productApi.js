@@ -3,6 +3,7 @@ export async function getProducts(params = {}) {
   const { limit = 20, search = "", category1 = "", category2 = "", sort = "price_asc" } = params;
   const page = params.current ?? params.page ?? 1;
 
+  console.log("params", params);
   const searchParams = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
@@ -12,8 +13,13 @@ export async function getProducts(params = {}) {
     sort,
   });
 
-  const response = await fetch(`/api/products?${searchParams}`);
+  console.log(`/api/products?${searchParams}`);
 
+  const response = await fetch(`/api/products?${searchParams}`);
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message);
+  }
   return await response.json();
 }
 

@@ -105,6 +105,8 @@ export const handlers = [
       },
     };
 
+    // return HttpResponse.json({ message: "상품 목록을 불러오는 중 오류가 발생했습니다." }, { status: 500 });
+
     await delay();
 
     return HttpResponse.json(response);
