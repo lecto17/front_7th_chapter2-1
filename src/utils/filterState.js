@@ -3,6 +3,8 @@
  * 검색어, 카테고리, 정렬, 개수 등의 필터 상태를 중앙에서 관리합니다.
  */
 
+import { updateURL, getFiltersFromURL } from "./urlManager";
+
 // 기본 필터 상태
 const defaultFilters = {
   search: "",
@@ -13,7 +15,8 @@ const defaultFilters = {
 };
 
 // 현재 필터 상태 (전역 상태)
-let currentFilters = { ...defaultFilters };
+// 초기 로드 시 URL에서 필터 복원
+let currentFilters = { ...defaultFilters, ...getFiltersFromURL() };
 
 /**
  * 현재 필터 상태를 조회합니다.
@@ -33,6 +36,10 @@ export const updateFilters = (newFilters) => {
     ...currentFilters,
     ...newFilters,
   };
+
+  // URL도 함께 업데이트
+  updateURL(currentFilters);
+
   return { ...currentFilters };
 };
 
@@ -41,5 +48,9 @@ export const updateFilters = (newFilters) => {
  */
 export const resetFilters = () => {
   currentFilters = { ...defaultFilters };
+
+  // URL도 함께 업데이트
+  updateURL(currentFilters);
+
   return { ...currentFilters };
 };
