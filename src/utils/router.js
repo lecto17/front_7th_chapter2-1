@@ -5,18 +5,19 @@
 import { HomePage } from "../pages/HomePage.js";
 import { ProductDetailPage } from "../pages/ProductDetailPage.js";
 import { NotFound } from "../components/NotFound.js";
-import { getCurrentPath, matchPath } from "./urlManager.js";
+import { matchPath } from "./urlManager.js";
 import { initLinkInterceptor } from "./navigation.js";
+import { BASE_PATH } from "../config/constants.js";
 
-// 라우트 정의
+// 라우트 정의 (base path 제외)
 const routes = [
   {
-    path: "/front_7th_chapter2-1/",
+    path: "/",
     component: HomePage,
     exact: true,
   },
   {
-    path: "/front_7th_chapter2-1/product/:id",
+    path: "/product/:id",
     component: ProductDetailPage,
   },
 ];
@@ -48,6 +49,22 @@ const findRoute = (path) => {
 };
 
 /**
+ * 현재 경로 가져오기 (base path 제거)
+ * @returns {string} Base path가 제거된 현재 경로
+ */
+const getCurrentPath = () => {
+  const fullPath = window.location.pathname;
+  // BASE_PATH가 '/'로 끝나면 제거
+  const basePath = BASE_PATH.endsWith("/") && BASE_PATH !== "/" ? BASE_PATH.slice(0, -1) : BASE_PATH;
+
+  if (fullPath.startsWith(basePath)) {
+    return fullPath.slice(basePath.length) || "/";
+  }
+
+  return fullPath;
+};
+
+/**
  * 라우터 실행 - 현재 경로에 맞는 페이지 렌더링
  */
 export const router = () => {
@@ -59,7 +76,6 @@ export const router = () => {
     return;
   }
 
-  console.log("path", path);
   const match = findRoute(path);
 
   if (match) {
@@ -70,11 +86,10 @@ export const router = () => {
     root.innerHTML = NotFound();
   }
 
-  // 페이지 렌더링 후 장바구니 핸들러 재초기화
-  // (장바구니 아이콘은 모든 페이지에 존재)
+  // 페이지 렌더링 후 장바구니 아이콘 개수 업데이트
   setTimeout(async () => {
-    const { initCartHandler } = await import("./initCartHandler.js");
-    initCartHandler();
+    const { updateCartIconCount } = await import("./cartManager.js");
+    updateCartIconCount();
   }, 0);
 };
 

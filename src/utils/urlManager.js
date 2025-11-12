@@ -2,6 +2,8 @@
  * URL 쿼리 파라미터를 관리하는 모듈
  */
 
+import { BASE_PATH } from "../config/constants.js";
+
 /**
  * 현재 URL의 쿼리 파라미터를 객체로 반환
  * @returns {Object} 쿼리 파라미터 객체
@@ -36,7 +38,19 @@ export const updateURL = (filters) => {
     }
   });
 
-  const newURL = params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname;
+  // BASE_PATH가 '/'로 끝나면 제거
+  const basePath = BASE_PATH.endsWith("/") && BASE_PATH !== "/" ? BASE_PATH.slice(0, -1) : BASE_PATH;
+
+  // 현재 경로에서 base path 제거
+  const currentPath = window.location.pathname;
+  let pathWithoutBase = currentPath;
+  if (currentPath.startsWith(basePath)) {
+    pathWithoutBase = currentPath.slice(basePath.length) || "/";
+  }
+
+  // base path와 함께 URL 생성
+  const fullPath = basePath === "/" ? pathWithoutBase : `${basePath}${pathWithoutBase}`;
+  const newURL = params.toString() ? `${fullPath}?${params.toString()}` : fullPath;
 
   // URL 업데이트 (페이지 새로고침 없이)
   window.history.pushState({}, "", newURL);
@@ -59,11 +73,19 @@ export const getFiltersFromURL = () => {
 };
 
 /**
- * 현재 경로를 반환
- * @returns {string} 현재 경로
+ * 현재 경로를 반환 (base path 제거)
+ * @returns {string} Base path가 제거된 현재 경로
  */
 export const getCurrentPath = () => {
-  return window.location.pathname;
+  const fullPath = window.location.pathname;
+  // BASE_PATH가 '/'로 끝나면 제거
+  const basePath = BASE_PATH.endsWith("/") && BASE_PATH !== "/" ? BASE_PATH.slice(0, -1) : BASE_PATH;
+
+  if (fullPath.startsWith(basePath)) {
+    return fullPath.slice(basePath.length) || "/";
+  }
+
+  return fullPath;
 };
 
 /**
