@@ -1,1 +1,0 @@
-import{handleLinkClick as e,initLinkInterceptor as t,navigateTo as n}from"./index-wSSyxf7G.js";export{n as navigateTo};
